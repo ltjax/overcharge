@@ -1,4 +1,6 @@
-local class = require "middleclass"
+# Install the class 'keyword' globally
+class = require "middleclass"
+
 local Gamestate = require "gamestate"
 
 function clamp(low, n, high)
