@@ -4,9 +4,14 @@ local Transform = require 'Transform'
 
 local InGameState = {}
 
+function InGameState:init()
+  self.font = love.graphics.newFont( 24 )
+end
+
+
 function InGameState:enter()
   self.state = State:new()
-  
+
   local camera = self.state.camera
   local aspectRatio = love.graphics.getWidth() / love.graphics.getHeight()
   local s = Transform:scale(love.graphics.getWidth(), love.graphics.getHeight())
@@ -14,7 +19,7 @@ function InGameState:enter()
   local center = Transform:translate(
     0.5,
     0.5)
-  
+
   self.projection = Transform:sequence(s, flip, center, Transform:scale(1/aspectRatio, 1)) 
 end
 
@@ -35,18 +40,28 @@ end
 
 function InGameState:draw()
   self:applyCamera()
-  
+
   for _, node in ipairs(self.state.nodes) do
     love.graphics.circle('line', node.position.x, node.position.y, node.radius, 32)
   end
-  
+
   if self.markedNode ~= nil then
     local n = self.markedNode
     for _, other in ipairs(n.neighbors) do
       love.graphics.line(n.position.x, n.position.y, other.position.x, other.position.y)
     end
+    love.graphics.push('transform')
+    love.graphics.origin()
+
+    local w = love.graphics.getWidth()
+    local h = love.graphics.getHeight()
+
+    love.graphics.setFont(self.font)
+    local text = string.format("%d / %d", #n.charge, #n.neighbors)
+    love.graphics.printf(text, 0, h * 3/4, w, 'center')
+    love.graphics.pop()
   end
-  
+
 end
 
 function InGameState:update(dt)
@@ -65,9 +80,12 @@ function InGameState:mousereleased()
 end
 
 function InGameState:keypressed(key)
-    if key == 'f1' then
-        love.window.setFullscreen(not love.window.getFullscreen( ), "desktop")
-    end
+  if key == 'f1' then
+    love.window.setFullscreen(not love.window.getFullscreen( ), "desktop")
+  end
+  if key == 'escape' then
+    love.event.quit()
+  end
 end
 
 function InGameState:keyreleased(key)

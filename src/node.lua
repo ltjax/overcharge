@@ -4,6 +4,7 @@ function Node:initialize(position)
   self.position = position
   self.neighbors = {}
   self.radius = 2.0
+  self.charge = {}
 end
 
 function Node:connect(node)
