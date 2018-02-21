@@ -44,4 +44,14 @@ function Transform:multiply(transform)
     self.sy * transform.dy + self.dy)
 end
 
+function Transform.static:sequence(...)
+  local arg = {...}
+  local result = Transform:identity()
+  for _, rhs in ipairs(arg) do
+    result = result:multiply(rhs)
+  end
+  return result
+end
+
+
 return Transform

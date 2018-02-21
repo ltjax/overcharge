@@ -12,8 +12,7 @@ function State:initialize()
   a:connect(c)
   
   self.camera = {
-    projection = Transform:identity(),
-    view = Transform:identity()
+    view = Transform:scale(0.01)
   }
 end
 

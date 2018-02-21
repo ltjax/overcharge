@@ -8,12 +8,13 @@ function InGameState:enter()
   self.state = State:new()
   
   local camera = self.state.camera
-  local s = Transform:scale(5.0, -5.0)
-  local t = Transform:translate(
-    love.graphics.getWidth() / 2,
-    love.graphics.getHeight() / 2)
+  local s = Transform:scale(love.graphics.getWidth(), love.graphics.getHeight())
+  local flip = Transform:new(1, -1, 0, 1)
+  local center = Transform:translate(
+    0.5,
+    0.5)
   
-  camera.projection = t:multiply(s)  
+  self.projection = Transform:sequence(s, flip, center) 
 end
 
 function InGameState:leave()
@@ -21,9 +22,10 @@ end
 
 function InGameState:applyCamera()
   local camera = self.state.camera
-  local transform = camera.projection:multiply(camera.view)
+  local transform = self.projection:multiply(camera.view)
   love.graphics.translate(transform.dx, transform.dy)
   love.graphics.scale(transform.sx, transform.sy)
+  --love.graphics.scale(800/100, 600/100)
 end
 
 
@@ -33,7 +35,6 @@ function InGameState:draw()
   for _, node in ipairs(self.state.nodes) do
     love.graphics.circle('line', node.position.x, node.position.y, 2.0, 32)
   end
-  
 end
 
 function InGameState:update(dt)
