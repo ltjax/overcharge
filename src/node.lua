@@ -3,6 +3,7 @@ local Node = class 'Node'
 function Node:initialize(position)
   self.position = position
   self.neighbors = {}
+  self.radius = 2.0
 end
 
 function Node:connect(node)

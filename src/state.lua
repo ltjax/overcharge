@@ -16,6 +16,19 @@ function State:initialize()
   }
 end
 
+function State:getNodeAt(x, y)
+  for _, node in ipairs(self.nodes) do
+    local sqrRadius = node.radius * node.radius
+    local dx = x - node.position.x
+    local dy = y - node.position.y
+    local sqrDistance = dx*dx + dy*dy
+    if sqrDistance < sqrRadius then
+      return node
+    end
+  end
+  return nil
+end  
+
 function State:addNode(node)
   table.insert(self.nodes, node)
   return node
