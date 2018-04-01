@@ -84,6 +84,9 @@ function InGameState:keypressed(key)
   if key == 'escape' then
     love.event.quit()
   end
+  if key == 'f' then
+    self.state:flock()
+  end
 end
 
 function InGameState:keyreleased(key)
