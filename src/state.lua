@@ -2,6 +2,7 @@ local State = class 'State'
 local Node = require 'Node'
 local Transform = require 'Transform'
 local NodeGenerator = require 'NodeGenerator'
+local Set = require 'set'
 
 function State:initialize()
   
@@ -12,30 +13,44 @@ function State:initialize()
 --  a:connect(c
   local w = 100
   self.generator = NodeGenerator:new(-w, -w, 2*w, 2*w, 20)
+  
+  self.generator:separate()
 
   
-  self:createNodes()
+  self:createNodes(self.generator)
   
   self.camera = {
     view = Transform:identity()
   }
 end
 
-function State:createNodes()
+function State:createNodes(generator)
   self.nodes = {}
-  for _, position in ipairs(self.generator:getNodes()) do
-    self:addNode(Node:new(position))
+  local lookup = {}
+  local sourceNodes = generator:getNodes()
+  for _, position in ipairs(sourceNodes) do
+    lookup[position] = self:addNode(Node:new(position))
+  end
+  local done = Set:new()
+  for _, position in ipairs(sourceNodes) do
+    local n = lookup[position]
+    generator:forEachNeighbor(position, 100, function(other)
+      if not done:contains(other) then
+        lookup[other]:connect(n)
+      end
+    end)
+    done:insert(position)
   end
 end
 
 function State:flock()
   self.generator:separate()
-  self:createNodes()
+  self:createNodes(self.generator)
 end
 
 function State:unique()
   self.generator:unique(20)
-  self:createNodes()
+  self:createNodes(self.generator)
 end
 
 function State:getNodeAt(x, y)

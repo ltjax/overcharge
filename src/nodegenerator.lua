@@ -25,39 +25,24 @@ function NodeGenerator:getNodes()
   return self.nodes
 end
 
-function NodeGenerator:flock(c, s)
-  c = c or 1
-  s = s or 2
+function NodeGenerator:flock(scale)
+  scale = scale or 1
   local newNodes = {}
   local separatedCount = 0
   for _, node in ipairs(self.nodes) do
-    local cohesionSum = v2:new()
-    local cohesionCount = 0
     local separationSum = v2:new()
     local separationCount = 0
-    self:forEachNeighbor(node, COHESION_DISTANCE, function(other, sqrDistance)
-      cohesionSum:add(other)
-      cohesionCount = cohesionCount + 1
-      if sqrDistance < SQR_SEPARATION_DISTANCE then
-        separationSum:add(other)
-        separationCount = separationCount + 1
-      end
+    self:forEachNeighbor(node, SEPARATION_DISTANCE, function(other)
+      separationSum:add(other)
+      separationCount = separationCount + 1
     end)
   
-  
     local newNode = node:clone()
-    if c > 0 and cohesionCount > 0 then
-      cohesionSum:scale(1 / cohesionCount)
-      cohesionSum:subtract(node)
-      cohesionSum:normalize()
-      cohesionSum:scale(c)
-      newNode:add(cohesionSum)
-    end
-    if s > 0 and separationCount > 0 then
+    if separationCount > 0 then
       separationSum:scale(1 / separationCount)
       separationSum:subtract(node)
       separationSum:normalize()
-      separationSum:scale(-s)
+      separationSum:scale(-scale)
       newNode:add(separationSum)
       separatedCount = separatedCount + 1
     end
@@ -85,11 +70,7 @@ end
 
 
 function NodeGenerator:separate()
-  while true do
-    local separated = self:flock(0, 5)
-    if separated == 0 then
-      break
-    end
+  while self:flock(10) ~= 0 do
   end
 end
 
