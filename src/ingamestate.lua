@@ -87,6 +87,9 @@ function InGameState:keypressed(key)
   if key == 'f' then
     self.state:flock()
   end
+  if key == 'g' then
+    self.state:unique()
+  end
 end
 
 function InGameState:keyreleased(key)

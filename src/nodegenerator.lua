@@ -25,8 +25,11 @@ function NodeGenerator:getNodes()
   return self.nodes
 end
 
-function NodeGenerator:flock()
+function NodeGenerator:flock(c, s)
+  c = c or 1
+  s = s or 2
   local newNodes = {}
+  local separatedCount = 0
   for _, node in ipairs(self.nodes) do
     local cohesionSum = v2:new()
     local cohesionCount = 0
@@ -43,32 +46,50 @@ function NodeGenerator:flock()
   
   
     local newNode = node:clone()
-    if cohesionCount > 0 then
+    if c > 0 and cohesionCount > 0 then
       cohesionSum:scale(1 / cohesionCount)
       cohesionSum:subtract(node)
       cohesionSum:normalize()
+      cohesionSum:scale(c)
       newNode:add(cohesionSum)
     end
-    if separationCount > 0 then
+    if s > 0 and separationCount > 0 then
       separationSum:scale(1 / separationCount)
       separationSum:subtract(node)
       separationSum:normalize()
-      separationSum:scale(-3)
+      separationSum:scale(-s)
       newNode:add(separationSum)
+      separatedCount = separatedCount + 1
     end
     table.insert(newNodes, newNode)
   end
   self.nodes = newNodes
+  return separatedCount
 end
 
-function NodeGenerator:eliminateDuplicates(radius)
+function NodeGenerator:unique(radius)
+  radius = radius or SEPARATION_DISTANCE
   
+  local newNodes = {}
+  local skip = Set:new()
+  for _, node in ipairs(self.nodes) do
+    if not skip:contains(node) then
+      self:forEachNeighbor(node, radius, function(other)
+        skip:insert(other)
+      end)
+      table.insert(newNodes, node)
+    end
+  end
+  self.nodes = newNodes
 end
 
 
-function NodeGenerator:iterateFlocking(count)
-  for i=1, count do 
-    self:flock()
+function NodeGenerator:separate()
+  while true do
+    local separated = self:flock(0, 5)
+    if separated == 0 then
+      break
+    end
   end
 end
 

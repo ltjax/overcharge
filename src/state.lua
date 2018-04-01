@@ -4,7 +4,6 @@ local Transform = require 'Transform'
 local NodeGenerator = require 'NodeGenerator'
 
 function State:initialize()
-  self.nodes = {}
   
 --  local a = self:addNode(Node:new({x = 0.0, y = 0.0 }))
 --  local b = self:addNode(Node:new({x = 0.0, y = 100.0 }))
@@ -15,23 +14,29 @@ function State:initialize()
   self.generator = NodeGenerator:new(-w, -w, 2*w, 2*w, 20)
 
   
-  for _, position in ipairs(self.generator:getNodes()) do
-    self:addNode(Node:new(position))
-  end
+  self:createNodes()
   
   self.camera = {
     view = Transform:identity()
   }
 end
 
-function State:flock()
-  self.generator:flock()
+function State:createNodes()
   self.nodes = {}
   for _, position in ipairs(self.generator:getNodes()) do
     self:addNode(Node:new(position))
   end
 end
 
+function State:flock()
+  self.generator:separate()
+  self:createNodes()
+end
+
+function State:unique()
+  self.generator:unique(20)
+  self:createNodes()
+end
 
 function State:getNodeAt(x, y)
   for _, node in ipairs(self.nodes) do
