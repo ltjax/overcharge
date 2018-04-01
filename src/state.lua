@@ -6,13 +6,13 @@ function State:initialize()
   self.nodes = {}
   
   local a = self:addNode(Node:new({x = 0.0, y = 0.0 }))
-  local b = self:addNode(Node:new({x = 0.0, y = 10.0 }))
-  local c = self:addNode(Node:new({x = 10.0, y = 0.0 }))
+  local b = self:addNode(Node:new({x = 0.0, y = 100.0 }))
+  local c = self:addNode(Node:new({x = 100.0, y = 0.0 }))
   a:connect(b)
   a:connect(c)
   
   self.camera = {
-    view = Transform:scale(0.01)
+    view = Transform:identity()
   }
 end
 

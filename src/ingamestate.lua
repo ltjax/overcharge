@@ -12,15 +12,13 @@ end
 function InGameState:enter()
   self.state = State:new()
 
-  local camera = self.state.camera
-  local aspectRatio = love.graphics.getWidth() / love.graphics.getHeight()
-  local s = Transform:scale(love.graphics.getWidth(), love.graphics.getHeight())
-  local flip = Transform:new(1, -1, 0, 1)
+  local w, h = love.graphics.getWidth(), love.graphics.getHeight()
+  local flip = Transform:new(1, -1, 0, h)
   local center = Transform:translate(
-    0.5,
-    0.5)
+    w/2,
+    h/2)
 
-  self.projection = Transform:sequence(s, flip, center, Transform:scale(1/aspectRatio, 1)) 
+  self.projection = Transform:sequence(flip, center)
 end
 
 function InGameState:leave()
